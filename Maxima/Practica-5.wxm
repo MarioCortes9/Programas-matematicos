@@ -1,0 +1,803 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: title   start ]
+Practica 5:Esquemas en diferencias finitas
+para problemas de contorno
+   [wxMaxima: title   end   ] */
+
+/* [wxMaxima: comment start ]
+Saber resolver metodos de diferencias finitas.
+-Diferencias centrales
+-Upmind
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Parte I : Solucion exacta de problemas de contorno con
+Maxima
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Solucion exacta de problemas de contorno utilizando Maxima
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+Vamos  resolver un tipo en concreto de problema de contorno:
+    -y'' + p(x)y' + q(x)y = r(x)   �IMPORTANTE EL SIGNO MENOS!
+    y(x0) = y0, y(x1) = y1. 
+Para ello seguir los siguientes pasos:
+    1.-Escribir ecuacion
+    2.-Calcular la solucion general, con la orden:
+        sol11:ode2(ecuacion del paso1,y,x)
+    3.-Utilizar orden:
+        bc2(sol, x=x0, y=y0, x=x1, y=y1); donde imponemos las condiciones de contorno
+    4.-Verificar la solucion obtenida:
+        -Definiendo una funcion y(x) con constantes que es la solucion general de siempre
+        -Usar el comando solve con las condiciones iniciales.
+Podremos tener 
+    -varias soluciones: Me depende de una constante K y puedo crear una lista de soluciones
+dandole valores a esa K.
+    -una: La condicion q(x) > 0 que garantiza la existencia y unicidad de solucion.
+    -ninguna: Nos sale [ ]
+Veamos esto a traves de la misma ecuacion cambiando las condiciones de contorno.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 1: Unica solucion
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+ecu11:'diff(y,x,2)+16*y=0;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sol11:ode2(ecu11,y,x) /*sol11 denota la solucion general*/;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(sol11,x=0,y=0,x=%pi/6,y=1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Solucion unica
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+y(x):=c1*sin(4*x)+c2*cos(4*x) /* Solucion general */;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([y(0)=0,y(%pi/6)=1],[c1,c2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+IMPORTANTE:
+y''+16y=0
+-y''-16y   q(t)=-16<0
+Unica solucion si q(t)>0
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 2: Varias soluciones
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+sol12:ode2(ecu11,y,x)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(sol12,x=0,y=0,x=%pi/4, y=0);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+En este caso se obtienen infinitas soluciones (y(x) = K sen(4x)) tenemos un constante K, 
+hecho que podemos comprobar si revolvemos el sistema de ecuaciones que resulta de imponer las condiciones de contorno:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+y(x):=c1*sin(4*x)+c2*cos(4*x)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([y(0)=0,y(%pi/4)=0],[c1,c2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Creamos una lista con algunas soluciones, por ejemplo, las que se corresponden con los valores de K: -1, 0, 1/2, 1/4, 1 y las representamos grÃÂÃÂ¡ficamente:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+sol12:makelist(K*sin(4*x), K, [-1,0,1/2,1/4,1])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+plot2d(sol12,[x,-1/2,%pi/4+1/2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 3:No soluciones
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+sol13:ode2(ecu11,y,x)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(sol13,x=0,y=0,x=%pi/2, y=1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Se observa que para estas condiciones de contorno no existe solucion al problema.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Parte II : Problemas de contorno en EDO
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Aproximacion de las derivadas mediante diferencias finitas
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+APROXIMACION:
+    Consideramos una red de punto uniforme en el intervalo a,b.
+Con h construyo los nodos Xj donde:
+    h=(b-a)/N
+    Xj=a+(j-1)*h
+
+
+Ejercicio mirar foto del 27/11
+Luego definimos p,q,r,a,b,n
+luego cargar el paqnumer:false;
+ecu:-'diff(y,x,2)+16*y=16*x;
+solgen:ode2(ecu, y, x);uete de centrales para N=10, luego para n=20, por ultimo el error.
+
+
+
+EJERCICIO 2,3,4
+    mltiplicar por un menos
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Un metodo en diferencias finitas centrales
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+-Metodo en diferencias finitas centrales
+Queremos una aproximacion de los nodos Xj, a traves de derivadas:
+    -Primera derivada
+        Regresivas el anterior.Error<=const*h
+        Progresivas el posterior
+        Centrales el anterior y el posterior
+    -Segunda derivada
+
+Partes de la segunda derivada y haces progresiva, luego regresiva.Obtienes lo del pdf(5.4).
+Una vez que tienes su correspondencia, lo sustituimos en la formula principal y multiplicando
+h^2/2 obtenemos un A*U=R con u siendo las aproximaciones. Con h muy pequeña.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+El metodo upwind
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+Muy parecido al anterior, usando otros comandos para A,R,U.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Implementacion utilizando Maxima
+Ejemplo 4:metodo en diferencias centrales con N = 10,
+me pide hallar la solucion exacta y los errores cometidos.
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+PASOS:
+1.-Escribimos nuestra ecuacion y calculamos la solucion general(IMPORTANTE EL MENOS)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:false;
+ecu:-'diff(y,x,2)+16*y=16*x;
+solgen:ode2(ecu, y, x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+2.-Se imponen las condiciones de contorno
+    (si q(x)>0 solucion exacta es unica)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(solgen, x=0, y=1, x=1, y=1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solex(x):=-%e^(4*x)/(%e^8-1)+%e^(8-4*x)/(%e^8-1)+x;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+3.-DIFERENCIAS CENTRALES
+ En nuestro caso: Hallar la solucion aproximada con N=10 por DIFERENCIAS CENTRALES
+    3.1.-Definimos datos del problema de contorno: p(x),q(x),r(x),a,b
+                -y'' + p(x)y' + q(x)y = r(x)   �IMPORTANTE EL SIGNO MENOS!
+                y(x0) = y0, y(x1) = y1.
+    3.2.-Cargamos el paquete, de centrales en ester caso.
+    3.3- A*u=R
+            Necesito invocar cada matriz
+                A:calculamatriz(p,q,a,b,N);
+                R:calculatermind(funr,a,b,N,alfa,beta)  que esl vector de terminos independientes
+                U=(u):restridiag(A,R) luego guardar en una lista:
+                solaprox1:makelist([a+(i-1)*(b-a)/N,U[i]],i,1,N+1); IMPORTANTE NOMBRE U Y PONER LA N
+    3.4.-Calculo de errores
+               err1:makelist(abs(Nombre de la ecuacion 2paso(a+(i-1)*(b-a)/N)-U[i]),i,1,N+1);
+       Ejemplo:err1:makelist(abs(solex(a+(i-1)*(b-a)/10)-U[i]),i,1,11);
+    3.5.-Grafica:
+            -Representacion de las soluciones aproximadas y exactas:
+Esto en la version nueva:    load(draw)
+  (solo me va en la nueva)   wxdraw2d(points_joined=true,color=blue,key="N=10",
+points(solaprox1),key="solex",color=red,explicit(solex(x),x,0,1));
+            -Representar las soluciones aproximadas de los apartados a) y b):
+Esto me va en la vieja:
+    wxplot2d([[discrete,solaprox1],[discrete,solaprox2]],[x,1,2],[legend,"centrales","upwind"]);
+Para las x tener en cuenta el intervalo de definicion del intervalo
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=0;
+q(x):=16;
+r(x):=16*x;
+a:0;
+b:1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+if numer#false then numer:false else numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 año/1 cuatrimestre/mates 3/Pen/centrales.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A:calculamatriz(p,q,a,b,10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R:calculatermind(r,0,1,10,1,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U:restridiag(A,R);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Esta es la solucion aproximada en los nodos de discretizacion(Xj) y los guardamos en una lista:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox1:makelist([a+(i-1)*(b-a)/10,U[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Calculamos errores
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error1:makelist(abs(solex(a+(i-1)*(b-a)/10)-U[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+err1:makelist(abs(solex(a+(i-1)*(b-a)/10)-U[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxerr1:apply (max,err1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(draw);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+wxdraw2d(points_joined=true, color=blue, key="N=10", points(solaprox1),
+         key="Sol Ex", color=red, explicit(solex(x),x,0,1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+AHORA VAMOS A HACERLO CON EL ESQUEMA UPWIND.
+Son los mismos pasos pero cargando otro paquete, cambian un  par de cosas al invocar la funcion.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 aÃÂÃÂ±o/1 cuatrimestre/mates 3/Pen/upwind.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A_U_10:calculamatrizupwind(p,q,0,1,10);
+R_U_10:calculatermind(r,0,1,10,1,1);
+U_U_10:restridiag(A_U_10,R_U_10);
+solaprox1_u:makelist([a+(i-1)*(b-a)/10,U_U_10[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Con la solucion U_U_10, calcula los errores y el error maximo.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error1:makelist(abs(solex(a+(i-1)*(b-a)/10)-U_U_10[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+err1:makelist(abs(solex(a+(i-1)*(b-a)/10)-U_U_10[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxerr1:apply (max,err1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Finalmente representamos las graficas:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+load(draw);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+wxdraw2d(points_joined=true, color=blue, key="N=10", points(solaprox1_u),
+         key="Sol Ex", color=red, explicit(solex(x),x,0,1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Ejercicios
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 1
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+    -eps*y''(x) + 3y'(x) - 2y(x) = cos(%pi*x),
+    y(0) = 0, y(1) = 1
+APARTADO A:
+    Aplicar el metodo en diferencias centrales con un nÃÂÃÂºmero de nodos N = 10, 20 en los
+casos eps = 1, eps=10^(-1).
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+CASO eps=1
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:false;
+ecu:-'diff(y,x,2)+3*'diff(y,x,1)-2*y=cos(%pi*x);
+solgen:ode2(ecu, y, x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(solgen, x=0, y=1, x=1, y=1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solex1(x):=y=(3*%pi*sin(%pi*x)+(%pi^2-2)*cos(%pi*x))/(%pi^4+5*%pi^2+4)-(((%e-1)*%pi^4+(4*%e-6)*%pi^2+6*%e-2)*%e^(2*x))/((%e^2-%e)*%pi^4+(5*%e^2-5*%e)*%pi^2+4*%e^2-4*%e)+(((%e^2-1)*%pi^4+(4*%e^2-6)*%pi^2+6*%e^2-2)*%e^x)/((%e^2-%e)*%pi^4+(5*%e^2-5*%e)*%pi^2+4*%e^2-4*%e);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solex1a(x):=(3*%pi*sin(%pi*x)+(%pi^2-2)*cos(%pi*x))/(%pi^4+5*%pi^2+4)+((%pi^4+(%e+6)*%pi^2-2*%e+2)*%e^(2*x))/((%e^2-%e)*%pi^4+(5*%e^2-5*%e)*%pi^2+4*%e^2-4*%e)-
+((%pi^4+(%e^2+6)*%pi^2-2*%e^2+2)*%e^x)/((%e^2-%e)*%pi^4+(5*%e^2-5*%e)*%pi^2+4*%e^2-4*%e);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=3;
+q(x):=-2;
+r(x):=cos(%pi*x);
+a:0;
+b:1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+if numer#false then numer:false else numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+CENTRALES N=10
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 aÃÂÃÂ±o/1 cuatrimestre/mates 3/Pen/centrales.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A_a_10:calculamatriz(p,q,a,b,10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R_a_10:calculatermind(r,a,b,10,0,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U_a_10:restridiag(A_a_10,R_a_10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Esta es la soluciÃÂÃÂ³n aproximada en los nodos de discretizaciÃÂÃÂ³n(Xj) y los guardamos en una lista:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox1_a_10:makelist([a+(i-1)*(b-a)/10,U_a_10[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+ERRORES N=10
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error_a_10:makelist(abs(solex1a(a+(i-1)*(b-a)/10)-U_a_10[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxerror_a_10:apply(max,error_a_10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+CENTRALES N=20
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A_a_20:calculamatriz(p,q,0,1,20);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R_a_20:calculatermind(r,a,b,20,0,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U_a_20:restridiag(A_a_20,R_a_20);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox1_a_20:makelist([a+(i-1)*(b-a)/20,U_a_20[i]],i,1,21);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+ERRORES N=20
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error_a_20:makelist(abs(solex1a(a+(i-1)*(b-a)/20)-U_a_20[i]),i,1,21);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxerror_a_20:apply(max,error_a_20);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+APARTADO B
+Aplicar el metodo en diferencias upwind con un numero de nodos N = 10, 20 en los
+casos eps = 1, eps=1/10.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+CASO eps=1
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+UPWIND N=10
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 aÃÂÃÂ±o/1 cuatrimestre/mates 3/Pen/upwind.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A_1a_Up_10:calculamatrizupwind(p,q,0,1,10)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R_1a_Up_10:calculatermind(r,0,1,10,0,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U_1a_Up_10:restridiag(A_1a_Up_10,R_1a_Up_10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox_1a_Up_10:makelist([a+(i-1)*(b-a)/10,U_1a_Up_10[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+ERRORES N=10(UPWIND)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error_1a_Up_10:makelist(abs(solex1a(a+(i-1)*(b-a)/10)-U_1a_Up_10[i]),i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+maxerror_1a_10:apply(max,error_1a_Up_10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+UPWIND N=20
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A_1a_Up_20:calculamatrizupwind(p,q,0,1,20)$
+R_1a_Up_20:calculatermind(r,0,1,20,0,1)$ 
+U_1a_Up_20:restridiag(A_1a_Up_20,R_1a_Up_20)$
+solaprox_1a_Up_20:makelist([a+(i-1)*(b-a)/20,U_1a_Up_20[i]],i,1,21);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+ERRORES N=20(UPWIND)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+error_1a_Up_20:makelist(abs(solex1a(a+(i-1)*(b-a)/20)-U_1a_Up_20[i]),i,1,21)$
+maxerror_1a_20:apply(max,error_1a_Up_20);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+CASO eps=10^-1
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:false;
+ecu:-10^-1*'diff(y,x,2)+3*'diff(y,x,1)-2*y=cos(%pi*x);
+solgen1:ode2(ecu, y, x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(solgen1, x=0, y=0, x=1, y=1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solex1b(x):=y=(300*%pi*sin(%pi*x)+(10*%pi^2-200)*cos(%pi*x))/(%pi^4+860*%pi^2+400)+((%pi^2*(10*%e^((30-2*sqrt(205))/2)+870)-200*%e^((30-2*sqrt(205))/2)+%pi^4+200)*%e^(((2*sqrt(205)+30)*x)/2))/(%pi^2*(860*%e^((2*sqrt(205)+30)/2)-860*%e^((30-2*sqrt(205))/2))+%pi^4*(%e^((2*sqrt(205)+30)/2)-%e^((30-2*sqrt(205))/2))+400*%e^((2*sqrt(205)+30)/2)-400*%e^((30-2*sqrt(205))/2))-((%pi^2*(10*%e^((2*sqrt(205)+30)/2)+870)-200*%e^((2*sqrt(205)+30)/2)+%pi^4+200)*%e^(((30-2*sqrt(205))*x)/2))/(%pi^2*(860*%e^((2*sqrt(205)+30)/2)-860*%e^((30-2*sqrt(205))/2))+%pi^4*(%e^((2*sqrt(205)+30)/2)-%e^((30-2*sqrt(205))/2))+400*%e^((2*sqrt(205)+30)/2)-400*%e^((30-2*sqrt(205))/2));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+q(x):=-2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+r(x):=cos(%pi*x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a:0; b:1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+CENTRALES N=10
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A_1b_10:calculamatriz(p,q,0,1,10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R_1b_10:calculatermind(r,0,1,10,0,1);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U_1b_10:restridiag(A_1b_10,R_1b_10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox_1b_10:makelist([a+(i-1)*(b-a)/10,U_1b_10[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+CENTRALES N=20
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A_1b_20:calculamatriz(p,q,0,1,20)$
+R_1b_20:calculatermind(r,0,1,20,0,1)$
+U_1b_20:restridiag(A_1b_20,R_1b_20);
+solaprox_1b_20:makelist([a+(i-1)*(b-a)/20,U_1b_20[i]],i,1,21);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+EJERCICIO 2
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+A)Aplicar el metodo en diferencias centrales con un numero de nodos N = 10.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=-1/x;
+q(x):=2/x^2;
+r(x):=-sin(log(x))/x^2;
+a:1;
+b:2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+if numer#false then numer:false else numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 año/1 cuatrimestre/mates 3/Pen/centrales.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A:calculamatriz(p,q,a,b,10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R:calculatermind(r,a,b,10,1,2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U:restridiag(A,R);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox1:makelist([a+(i-1)*(b-a)/10,U[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+B) Aplicar el metodo en diferencias upwind con un numero de nodos N = 10
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=-1/x;
+q(x):=2/x^2;
+r(x):=-sin(log(x))/x^2;
+a:1;
+b:2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 año/1 cuatrimestre/mates 3/Pen/upwind.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+A_Up:calculamatrizupwind(p,q,a,b,10)$
+R_Up:calculatermind(r,a,b,10,1,2)$ 
+U_Up:restridiag(A_Up,R_Up);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox2:makelist([a+(i-1)*(b-a)/10,U_Up[i]],i,1,11);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+C)Representar las soluciones aproximadas de los apartados a) y b).
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+Esto solo me va solo en la vieja
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+wxplot2d([[discrete,solaprox1],[discrete,solaprox2]],[x,1,2],,[legend,"centrales","upwind"]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(draw)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(implicit_plot);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 3
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 4
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+A)Aplicar el metodo en diferencias centrales con longitud de paso h = 1 y h = 0.5.
+    h=(b-a)/N
+    h=1 -> N=(6-0)/1=6
+    h=0.5 -> N=6/0.5=12
+-y''(x) -2(2 - x)y'(x) =- 2(2 - x)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:false;
+ecu:-'diff(y,x,2)-2*(2-x)*'diff(y,x,1)=-2*(2-x);
+solgen:ode2(ecu, y, x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+bc2(solgen, x=0, y=-1, x=6, y=5);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solex(x):=x-1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p(x):=-2*(2-x);
+q(x):=0;
+r(x):=-2*(2-x);
+a:0;
+b:6;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+if numer#false then numer:false else numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load("F:/UNIVERSIDAD/2 aÃ±o/1 cuatrimestre/mates 3/Pen/centrales.mac")$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+PARA N=6
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A:calculamatriz(p,q,a,b,6);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+R:calculatermind(r,a,b,6,-1,5);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U:restridiag(A,R);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solaprox1:makelist([a+(i-1)*(b-a)/7,U[i]],i,1,7);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Esto solo me va en la version nueva
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+load(draw)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+wxdraw2d(points_joined=true,color=blue,key="N=7",
+
+points(solaprox1),key="solex",color=red,explicit(solex(x),x,0,6));
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

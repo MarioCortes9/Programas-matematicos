@@ -1,0 +1,778 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: title   start ]
+Practica 4: Comportamiento cualitativo de las soluciones de sistemas diferenciales autonomos
+   [wxMaxima: title   end   ] */
+
+/* [wxMaxima: section start ]
+Estabilidad de las soluciones de sistemas autonomos
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+    Partimos del caso en el que tenemos un sistema autonomo de ecuaciones diferenciales
+y tenemos dos soluciones del sistema, y e y*. Ademas, las condiciones iniciales de estas
+estan muy proximas.�podriamos asegurar que las soluciones y(t) e y*(t)
+tambien estaran proximas?. Si la respuesta es afirmativa se dice que la solucion y(t) es estable
+y en caso contrario se dice que es inestable.
+    -ESTABLE:Condiciones iniciales proximas y las soluciones tambien.
+    Si son"identicas" es decir su resta es cero de las c.iniciales se
+    dice que son asintoticamente estable.
+    -INESTABLE:Condiciones iniciales proximas y las soluciones  no.
+Para analizar el comportamiento de estabilidad de los sistemas diferenciales autonomos dis-
+tinguiremos dos casos: el caso de sistemas lineales y el caso de sistemas no lineales.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Sistemas diferenciales lineales
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+Tenemos:    y'(t)=A*y(t)
+Determinaremos la estabilidad a traves de los valores propios y vectores propios.
+
+TEOREMA 2.2:
+    -Es estable cuando los valores propios(landa) tienen parteRE(landa) menor o igual que cero y
+cuando parteRE(landa)=0 el numero de vectores propios de ese valor coinciden con la multiplicidad 
+de esa landa.
+    -Es inestable cuando existe, a un que sea uno, un valor propio con parteRE(landa) mayor que cero o
+bien cuando parteRE(landa)=0 el numero de vectores propios de ese valor NO coinciden con la multiplicidad 
+de esa landa.
+    -Es asintoticamente estable cuando todos los valores propios cumplen parteRE(landa) es menor que cero.
+
+ORDENES A UTILIZAR:
+    matrix, eigenvectors, mas comprobacion grafica.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 1: Estable
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+PASOS:
+    1-Definir matriz
+    2-Orden eigenvectors(matriz)
+    Me da---> valores propios,multiplicidad,vectores propios
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A:matrix([-3,0,0],[2,0,2],[3,-2,0]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(A);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+IMPORTANTE: valores propios, multiplicidad, vectores propios.
+
+Vamos al teorema(2.2) para ver si es estable o inestable.
+Lo primero es que todas mis landas tienen parte real menor que cero o igual a cero.
+En las que su parteRe es cero, la multiplicidad conicide con los valores propios
+asociados asi que es estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 2: Inestable
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+A:matrix([1,0,0],[0,0,0],[0,1,0]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(A);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+lanada=1 parte real positiva
+Inestable
+
+Es estable cuando
+landa=0 parte real es cero
+    si numero de vectores propios=multiplicidad de landa es estable
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 3: Asintoticamente inestable
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+A:matrix([-1,0,0],[0,-1,2],[0,-2,-1]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(A);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Como todas mis landas"VALORES PROPIOS" tienen parte real negativa, es Asintoticamente estable.LAS DOS SOLUCIONES TIENDEN A CERO.
+Comprobacion grafica: nos tiene que salir que las dos soluciones tienden a cero.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(y1,y2,y3,t)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+1.Resolvemos el sistema diferencial con las condiciones iniciales:
+    y0 = (1, 1, 1)T 
+    y*0 = (1 + d, 1 + d, 1 + d)T , d = 0.2
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+atvalue(y1(t),t=0,1)$
+
+atvalue(y2(t),t=0,1)$
+
+atvalue(y3(t),t=0,1)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+desolve(['diff(y1(t),t)=-y1(t), 'diff(y2(t),t)=-y2(t)+2*y3(t),
+
+'diff(y3(t),t)=-2*y2(t)-y3(t)], [y1(t),y2(t),y3(t)]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+2-Con el delta:
+PVI
+    Y'=AY
+    Y(0)=(1.2,1.2,1.2)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(y1,y2,y3,t)$
+
+atvalue(y1(t),t=0,1.2)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+atvalue(y2(t),t=0,1.2)$
+
+atvalue(y3(t),t=0,1.2)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+desolve(['diff(y1(t),t)=-y1(t), 'diff(y2(t),t)=-y2(t)+2*y3(t),
+
+'diff(y3(t),t)=-2*y2(t)-y3(t)], [y1(t),y2(t),y3(t)]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Dibujamos las componentes de las soluciones y(t) e y'(t):
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+y1(t) :=%e^(-t)$
+
+y2(t) :=%e^(-t)*(sin(2*t)+cos(2*t))$
+
+y3(t) :=%e^(-t)*(cos(2*t)-sin(2*t))$
+
+y1mod(t) :=(6*%e^(-t))/5$
+
+y2mod(t) :=%e^(-t)*((6*sin(2*t))/5+(6*cos(2*t))/5)$
+
+y3mod(t) :=%e^(-t)*((6*cos(2*t))/5-(6*sin(2*t))/5)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+wxplot2d([y1,y1mod],[t,0,5]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+wxplot2d([y3,y3mod],[t,0,5]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Sistemas diferenciales no lineales
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+Algo mas complicado, no creo que entre.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 2
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+ENUNCIADO:
+PVI:
+    y'=y^2(t)
+    y(0)=-1
+y(t)=-1/(1+t)
+asintoticamente estable
+PVI:
+    y´=y^2(t)
+    y(0)=1
+y(t)=1/(1-t)
+inestable
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Estabilidad de las soluciones de equilibrio
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+    Llamamos a y0 punto de equilibrio(puntos criticos) de y'=f(y(t)) si y0 cumple f(y0)=0.
+En estos puntos se verifica que y'(t) = 0 (condicion de punto critico), por lo tanto
+la solucion del sistema diferencial que pasa por estos puntos viene dada por y(t) = y0 constante.
+A estas soluciones se les llama soluciones de equilibrio.
+
+TEOREMA 3.2:Primero mirar las landas, digo lo que es segun el teorema 2.2 y luego miro el teorema 3.2
+    -Si la solucion de equilibrio u(t) = 0 del sistema linealizado  es asintoticamente estable, en-
+tonces la solucion de equilibrio y(t) = y0 del sistema no lineal tambien es asintoticamente
+estable.
+    -Si la solucion de equilibrio u(t) = 0 del sistema linealizado es inestable, entonces la
+solucion de equilibrio y(t) = y0 del sistema no lineal tambien es inestable. 
+    -Si la solucion de equilibrio u(t) = 0 del sistema linealizado es estable, entonces no se
+puede asegurar nada para la solucion de equilibrio y(t) = y0 del sistema no lineal. Esta
+solucion podrıa ser inestable, estable o asintoticamente estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 3
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+1-Definir de la funcion vectorial f(y):
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+f1:1-y1*y2;
+
+f2:y1-y2^3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+2-Calculo de los puntos criticos:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f1=0,f2=0],[y1,y2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Se obtienen 2 puntos de equilibrio/criticos reales: [-1,-1] y [1,1]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+3-Matriz Jacobiana Jf (y):(la contruyo con la orden y luego
+de una menera mas ordenada)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f1,f2],[y1,y2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(y1,y2):=matrix([-y2, -y1],[1, -3*y2^2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Para -1,-1 y luego para 1,1:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+4-Estudio de la estabilidad para cada punto:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(-1,-1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Como Re landa2 > 0 la solucion de equilibrio es inestable,
+asi que y(t) = (-1, -1) es inestable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(1,1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Como todos los valores propios satisfacen Re landa < 0 la solucion de equilibrio y(t) = (1, 1)
+del sistema lineal es asintoticamente estable, la solucion del sitema no lineal  es
+asintoticamente estable porque es la parte real es negativa y de multiplicidad 2 te es asintoticamente
+estable, ahora el teorema 3.2 me dice que la solucion es asintoticamente estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 4
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+f1:y2-y1*(y1^2+y2^2);
+
+f2:-y1-y2*(y1^2+y2^2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f1=0,f2=0],[y1,y2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Punto de equilibrio (punto critico)[0,0]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f1,f2],[y1,y2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(y1,y2):=matrix([-y2^2-3*y1^2,1-2*y1*y2],[-2*y1*y2-1,-3*y2^2-y1^2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(0,0));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Es estable si la parte real es menor o igual q cero
+y la multiplidad coincide con los valores propios.
+
+Estamos en el caso del apartado
+ c) del Teorema 3.2 y no podemos asegurar nada sobre la estabilidad de la soluicon de equilibrio
+
+
+y(t) = (0, 0). Esta podria ser inestable, estable o asintoticamente estable Pero la solucion segun el teorema 3.2 puede ser estable, inestable o asintoticamente estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+ El plano de fases: trayectorias y orbitas
+(para sistemas diferenciales autonomos bidimensionales)
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: comment start ]
+Cargar el paquete load(plotdf) para dibujar campo de direcciones(Practica1)
+    -Intentamos sacar los puntos de equilibrio.
+    -Sacar trayectotias sino de puede cargar paquetes.
+CASOS DE PUNTOS DE EQUILIBRIO u(t):
+    -Si landa1 distinto landa2 son reales y no nulos:
+      * Si signo(landa1) = signo(landa2), el punto de equilibrio es un nodo.
+      * Si signo(landa1) distinto signo(landa2), el punto de equilibrio es un punto de silla.
+    -Si landa1 = landa2 es real y no nulo:
+        * Si Jf (x0, y0) es diagonalizable, el punto de equilibrio es un nodo estelar.
+        * Si Jf (x0, y0) no es diagonalizable, el punto de equilibrio es un nodo tangencial.
+    -Si landa1, landa2 son complejos conjugados:
+        * Si Re landa1 = Re landa2 distinto de 0, el punto de equilibrio es un foco o punto espiral(es lo mismo).
+        * Si Re landa1 = Re landa2 = 0, el punto de equilibrio es un centro.
+TEOREMA 4.2:
+     El punto de equilibrio (x0, y0) del sistema no lineal tambien sera un nodo, un punto de silla o un foco como el punto (0, 0)del sistema linealizado. 
+    -Si (0, 0) es un centro en el sistema linealizado, entonces el punto de equilibrio (x0, y0) del
+sistema diferencial (no lineal) puede ser un centro o un foco.
+    -Si (0, 0) es un nodo estelar o tangencial en el sistema linealizado, entonces el punto de
+equilibrio (x0, y0) del sistema diferencial (no lineal) puede ser un nodo estelar o tangencial o puede ser un foco.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejemplo 5
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+a) Calculo de los puntos de equilibrio y clasificar:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+Seguimos los pasos de estabilidad de las soluciones de equilibrio
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+f:y*(1+x^2+y^2);
+
+g:-x*(1+x^2+y^2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f=0,g=0],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f,g],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(x,y):=matrix([2*x*y,3*y^2+x^2+1],[-y^2-3*x^2-1,-2*x*y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(0,0));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Claramente el punto de equilibrio (0, 0) es un centro para el sistema linealizado, y de
+acuerdo con el Teorema 4.2 puede ser un centro o un foco del sistema original.
+
+
+b) Calculo de las orbitas o trayectorias:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ode2('diff(y,x)=g/f,y,x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(plotdf)$
+
+plotdf([f,g]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Se trata de un centro viendo la forma de las curvas, para el sistem lineal.
+
+c)COMPORTAMIENTO DEL SISTEMA LINEAL
+    A la vista de la Figura 3 es claro que el punto de equilibrio (0, 0) es un centro para el sistema lineal
+
+del Ejemplo 5. En este caso no podemos decir nada sobre la estabilidad del punto de
+
+equilibrio (0, 0).
+
+
+d)COMPORTAMIENTO DEL SISTEMA NO LINEAL
+    En el Ejemplo 4 resulta claro que el punto de equilibrio (0, 0) es un centro para el sistema
+
+linealizado. Para estudiar su comportamiento en el sistema original dibujamos el retrato
+
+de fases en la Figura 4. De esta figura se deduce que el punto de equilibrio (0, 0) es un foco
+
+o punto espiral para el sistema del Ejemplo 4 y ademas es asintoticamente estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+f1:y-x*(x^2+y^2);
+f2:-x-y*(x^2+y^2);
+load(plotdf);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+plotdf([f1,f2],[x,-2,2],[y,-9,9]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Foco asintoticamente estable
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Ejercicios
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 1:Estudiar la estabilidad de las soluciones del sistema diferencial lineal en los siguientes
+
+
+casos:
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+A)
+    Como la parte real de mis landas es menor o igual a cero, me centro en analizar
+la landa con parte real nula. Su multiplicidad no coincide con los vectores propios
+asociados, asi que es inestable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+A:matrix([2,-3,0],[0,-6,-2],[-6,0,-3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(A);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+B)
+    Como todos mis valores propios tienen parte real menor que cero, es asintoticamente
+estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+B:matrix([-2,0,0],[0,-2,1],[0,1,-2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(B);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+C)
+    Como la pare real es nula, pero la multiplicidad coincide con el numero de vectores propios asociados
+el sistema lineal es estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+C:matrix([0,2,0,0],[-2,0,0,0],[0,0,0,2],[0,0,-2,0]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(C);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 2:Estudiar la estabilidad de la solucion de equilibrio y1(t) = 0, y2(t)= 0, y3(t) = 0 del sistema dinamico
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+f1:-2*y1+y2+3*y3+9*(y2)^3;
+f2:-6*y2-5*y3+7*(y3)^5;
+f3:-y3+(y1)^2+(y2)^2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f1=0,f2=0,f3=0],[y1,y2,y3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f1,f2,f3],[y1,y2,y3]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(y1,y2,y3):=matrix([-2,(27*(y2)^2)+1,3],[0,-6,(35*(y3)^4)-5],[2*y1,2*y2,-1]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(0,0,0));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Como todos los valores propios tienen parte real menor que cero, la solucion
+del sistema linealizado es asintoticamente estable. Segun el teorema 3.2(a) la
+solucion de equilibrio(0,0,0) del sistema no lineal tambien es asintoticamente estable.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Ejercicio 3:Estudiar la estabilidad de la soluciones de equilibrio y clasificarlas segun su tipo para los siguientes sistemas dinamicos bidimensionales(APARTADO 5)
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+A.
+PASOS:
+    -Calcular puntos de equilibrio y estudio su estabilidad
+    -Explicar con el teorema 2.2, teorema 3.2(para el sistema linealizado) y teorema 4.2(para el sistema original)
+    -Resolver la ec.diferencial si se puede, pero solo con representar las curvas me
+sirve para concluir. Usar los diagrama de fases de la ultima hoja y el teorema4.2
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+f:y+x*(x^2+y^2);
+g:-x+y*(x^2+y^2);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f=0,g=0],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Hay un punto de equilibrio real: [x=0,y=0]
+Matriz Jacobiana Jf (x, y):
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f,g],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(x,y):=matrix([y^2+3*x^2,2*y*x+1],[2*x*y-1,3*y^2+x^2]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(0,0));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+    Como todos los valores propios tiene parte real igual a cero y coniciden la multiplicidad
+con el numero de vectores propios asociados, la solucion del sistema linealizado es estable. 
+Segun el teorema 3.2(c) la solucion de equilibrio(0,0) del sistema no lineal no se
+puede asegurar nada, esta solucion podra ser inestable, estable o asintoticamente estable.
+    
+    Ademas, como los valores propios son numeros complejos con parte real es nula en ambos, el punto de equilibrio (0,0) es un centro para el sistema linealizado.
+Por otro lado, segun el teorema 4.2, si (0, 0) es un centro en el sistema linealizado, entonces el punto de equilibrio (x0, y0) del sistema original puede ser un
+centro o un foco.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ode2('diff(y,x)=g/f,y,x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(plotdf)$
+plotdf([f,g]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+A la vista de la figura, el punto de equilibrio (0, 0) es un foco para el sistema original.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+C.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+f:1-y;
+g:x^3+y;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f=0,g=0],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Hay punto de equilibrio en (-1,1).Veamos su estabilidad.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f,g],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(x,y):=matrix([0,-1],[3*x^2,1]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(J(-1,1));
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+    Como tengo una parte real de un valor propio positiva, significa que la solucion de sistema
+linealizado es inestable, y por tanto, la solucion de equilibrio del sitema original es inestable segun el
+teorema 3.2(b).
+    Por otro lado, como mis valores propios son complejos conjugados y la parte reales distinta el
+punto de equilibrio es un foco o punto espiral(que es lo mismo).LO represento graficamente para comprobar:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ode2('diff(y,x)=g/f,y,x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(plotdf)$
+plotdf([f,g]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+D.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+f:sin(x+y);
+g:exp(x)-1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([f=0,g=0],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Cuando maxima no puede resolver el sistema de dos ecuaciones.
+Resolvemos la segunda ecuacion y sustituimos el resultado en la primera.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([g=0],[x]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve([subst(0,x,f)],[y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Maxima pierde soluciones. La segunda ecuacion e^x-1=0 da x=0. 
+Sustituyendo en la primera tenemos sin(y)=0,
+cuya solucion es y=n*%pi, donde n es un
+numero entero.
+Asi que se obtiene las soluciones de equilibrio: [x=0,y=n*pi], n = 0,1,-1,2,-2, ...
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+jacobian([f,g],[x,y]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(x,y):=matrix([cos(y+x),cos(y+x)],[%e^x,0]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+J(0,n*%pi);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Tenemos dos casos, ya que si n es par
+cos(n*%pi)=1 y si n es impar cos(n*%pi)=-1
+Si n es par: n = 2k, k = 0,1,2 ...
+Asi que tomamos n par, con k=0, y sustituimos en nuestra
+matriz jacobiana.
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Jpar:matrix([1,1],[1,0]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+eigenvectors(Jpar);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+    Segun el teorema 2.2, como la parte real de uno de mis valores propios es positiva
+la solucion del sistema diferencial lineal es inestable, entonces la
+solucion de equilibrio y(t) = y0 del sistema no lineal tambien es inestable(teorema 3.2).
+    
+    Por otro lado(teorema 4.2), el punto de equilibrio [0,0] es un punto de silla del sistema linealizado.
+entonces las orbitas del sistema no lineal, en las proximidades del punto de equilibrio
+(x0, y0), tienen el mismo comportamiento que las orbitas del sistema linealizado, es decir,
+un punto de silla.
+Intentamos calcular analiticamente las orbitas del sistema original:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ode2('diff(y,x)=g/f,y,x);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+load(plotdf)$
+plotdf([f,g]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Se confirma que el punto de equilibrio
+[0,pi] es un punto de silla del sistema original.
+Ademas,  se observa que las orbitas o trayectorias se
+aproximan a [0,pi], por lo tanto el punto de
+equilibrio es  asintoticamente estable para el sistema
+original.
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+SOLUCIONARIO:
+
+a) inestable.Como para el 0 hay multiplicidad 2 y tenemos un vetor propio
+asociado a 0, esto nos dice que es inestable.
+b) asintoticamente estables
+c) estables
+Ejercicio 2:
+    Punto de equilibrio (0,0,0) asintoticamente estable
+ejercicio 3:
+    Soluciones del sistem original (no lineal)
+a)(0,0) es un foco inestable(ver diagrama de fase)
+b)(0,0) es un centro inestable(ver diagrama de fase)
+    limit(J(x,x),x,0)
+c)(-1,1) es un foco inestable
+d)(0,2Kpi) con K que pertenece a Z, puto de silla inestable
+  (0,2(K+1)pi) con K que pertenece a Z, foco asintocamente estable
+    ver diagrama de fase
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+ 
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
