@@ -1,0 +1,48 @@
+TÍTULO Ej 2 Practica5(A)
+
+PUNTOS
+% pun X    Y    Z
+  1   0.0  0.0
+  2   3.0  0.0
+  3   7.5  0.0
+
+
+LÍNEAS
+% lín tipo        pun
+  1   POLINOMIAL  1 2
+  2   POLINOMIAL  2 3
+
+
+
+
+PROPIEDADES
+% pro val1  val2
+  1   1.320e-03  3.180e-06 %IPE120
+
+
+ELEMENTOS_LÍNEAS
+% lín tipo        mat pro
+TOD RIg ACE IPE120
+
+
+
+DESPLAZAMIENTOS_GLOBALES_PUNTOS
+% pun est DX   DY     GZ
+  1   1   0.0 0.0 0.0
+
+
+
+
+
+
+
+%CARGAS_GLOBALES_LÍNEAS
+% lín est tipo      pX   pY    disI disF
+%1  1  PUN 0.0 -5000.0 0.0 1.8  
+%2  1   UNIFORME  0.0  -1600.0
+
+
+CARGAS_GLOBALES_PUNTOS
+% pun est FX   FY    MZ
+  2   1   0.0  1.0 0.0  %X
+  3   1   0.0  0.0 0.0     %Y
